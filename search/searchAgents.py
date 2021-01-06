@@ -509,17 +509,18 @@ def foodHeuristic(state, problem):
     from util import PriorityQueue
     position, foodGrid = state
     food_pos = foodGrid.asList()
-    if len(food_pos) == 0:
+    food_pos += [position]
+    if len(food_pos) == 1:
         return 0
-    problem.heuristicInfo[(position, food_pos[0])] = mazeDistance(position, food_pos[0], problem)
-    problem.heuristicInfo[(food_pos[0], position)] = problem.heuristicInfo[(position, food_pos[0])]
-    add_on = problem.heuristicInfo[(position, food_pos[0])]
-    for x in range(len(food_pos)):
-        i = food_pos[x]
-        if (position, i) not in problem.heuristicInfo or (i, position) not in problem.heuristicInfo:
-            problem.heuristicInfo[(position, i)] = mazeDistance(position, i, problem)
-            problem.heuristicInfo[(i, position)] = problem.heuristicInfo[(position, i)]
-        add_on = min(add_on, problem.heuristicInfo[(position, i)])
+    # problem.heuristicInfo[(position, food_pos[0])] = mazeDistance(position, food_pos[0], problem)
+    # problem.heuristicInfo[(food_pos[0], position)] = problem.heuristicInfo[(position, food_pos[0])]
+    # add_on = problem.heuristicInfo[(position, food_pos[0])]
+    # for x in range(len(food_pos)):
+    #     i = food_pos[x]
+    #     if (position, i) not in problem.heuristicInfo or (i, position) not in problem.heuristicInfo:
+    #         problem.heuristicInfo[(position, i)] = mazeDistance(position, i, problem)
+    #         problem.heuristicInfo[(i, position)] = problem.heuristicInfo[(position, i)]
+    #     add_on = min(add_on, problem.heuristicInfo[(position, i)])
 
     
     # mp = 0
@@ -534,17 +535,19 @@ def foodHeuristic(state, problem):
 
 
     if tuple(food_pos) in problem.heuristicInfo:
-        return problem.heuristicInfo[tuple(food_pos)]+add_on
+        return problem.heuristicInfo[tuple(food_pos)]
 
     pq = PriorityQueue()
-    for i in range(len(food_pos)):
-        pq.push((i, (i,)), 0)
-        problem.heuristicInfo[(i,)] = 0
+    # for i in range(len(food_pos)):
+    #     pq.push((i, (i,)), 0)
+    #     problem.heuristicInfo[(i,)] = 0
+    pq.push((len(food_pos)-1, (len(food_pos)-1,)),0)
+    problem.heuristicInfo[(len(food_pos)-1,)] = 0
     while not pq.isEmpty():
         i, p = pq.pop()
         if len(p)==len(food_pos):
             problem.heuristicInfo[tuple(food_pos)] = problem.heuristicInfo[p]
-            return problem.heuristicInfo[p]+add_on
+            return problem.heuristicInfo[p]
 
         for s in range(len(food_pos)):
             if s not in p:
